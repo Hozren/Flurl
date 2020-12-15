@@ -193,15 +193,18 @@ namespace Flurl.Test.UrlBuilder
 
 		[Test]
 		public void can_append_multiple_path_segments_by_multi_args() {
-			var url = "http://www.mysite.com".AppendPathSegments("category", "/endpoint/");
-			Assert.AreEqual("http://www.mysite.com/category/endpoint/", url.ToString());
+			var url = "http://www.mysite.com:8080".AppendPathSegments("category", "/endpoint/");
+			Assert.AreEqual("http://www.mysite.com:8080/category/endpoint/", url.ToString());
 		}
 
 		[Test]
-		public void can_append_multiple_path_segments_by_enumerable() {
-			IEnumerable<string> segments = new[] { "/category/", "endpoint" };
-			var url = "http://www.mysite.com".AppendPathSegments(segments);
-			Assert.AreEqual("http://www.mysite.com/category/endpoint", url.ToString());
+		[TestCase("http://www.mysite.com", new[] { "/category/", "endpoint" }, "http://www.mysite.com/category/endpoint")]
+		[TestCase("http://www.mysite.com:1234", new[] { "/category/", "endpoint" }, "http://www.mysite.com:1234/category/endpoint")]
+		[TestCase("www.mysite.com", new[] { "/category/", "endpoint" }, "www.mysite.com/category/endpoint")]
+		[TestCase("www.mysite.com:1234", new[] { "/category/", "endpoint" }, "www.mysite.com:1234/category/endpoint")]
+		public void can_append_multiple_path_segments_by_enumerable(string original, string[] segments, string result) {
+			var url = original.AppendPathSegments(segments);
+			Assert.AreEqual(result, url.ToString());
 		}
 
 		[TestCase("http://www.site.com/path1/path2/?x=y", "http://www.site.com/path1/?x=y")]
